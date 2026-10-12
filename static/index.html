@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zomi TTS — Real Tedim Voice</title>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --border:#30363d;
+    --accent:#7c4dff; --accent2:#00c853;
+    --text:#f0f3f8; --muted:#9aa4b2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+       min-height:100vh}
+  header{background:linear-gradient(135deg,#2a1a5e,#0d47a1);
+         padding:28px 20px 22px;text-align:center}
+  header h1{font-size:1.7rem;letter-spacing:.3px}
+  header p{color:#cdd6e4;font-size:.92rem;margin-top:6px}
+  .badge{display:inline-block;background:rgba(0,200,83,.15);color:#7dffa8;
+         border:1px solid rgba(0,200,83,.4);border-radius:999px;
+         font-size:.75rem;padding:4px 12px;margin-top:10px}
+  .wrap{max-width:660px;margin:0 auto;padding:18px 14px 40px}
+  .card{background:var(--card);border:1px solid var(--border);
+        border-radius:16px;padding:18px;margin-top:14px}
+  .note{background:rgba(124,77,255,.08);border:1px solid rgba(124,77,255,.35);
+        border-radius:12px;padding:10px 14px;font-size:.83rem;color:#cbb8ff;margin-top:14px}
+  label{display:block;font-size:.82rem;color:var(--muted);margin:12px 0 6px}
+  textarea{width:100%;min-height:140px;background:#0d1117;color:var(--text);
+           border:1px solid var(--border);border-radius:12px;padding:14px;
+           font-size:16px;resize:vertical}
+  textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .counter{text-align:right;font-size:.78rem;color:var(--muted);margin-top:4px}
+  .voices{display:flex;gap:10px;margin-top:4px}
+  .voices label{flex:1;margin:0;cursor:pointer}
+  .voices input{display:none}
+  .voices span{display:block;text-align:center;padding:12px;border:1px solid var(--border);
+               border-radius:12px;font-size:.9rem;transition:.15s}
+  .voices input:checked+span{border-color:var(--accent);background:rgba(124,77,255,.15);
+                             color:#fff;font-weight:600}
+  .voices small{display:block;font-weight:400;color:var(--muted);font-size:.72rem;margin-top:2px}
+  .btn{width:100%;padding:15px;border:0;border-radius:14px;font-size:1.05rem;
+       font-weight:700;cursor:pointer;margin-top:14px}
+  .btn-speak{background:linear-gradient(135deg,var(--accent),#00b0ff);color:#fff}
+  .btn-speak:disabled{opacity:.55;cursor:wait}
+  .btn-dl{background:#21262d;color:var(--text);border:1px solid var(--border);
+          display:none;text-decoration:none;text-align:center}
+  #status{margin-top:10px;font-size:.88rem;color:var(--muted);min-height:1.3em}
+  #status.err{color:#ff8a80}#status.ok{color:#7dffa8}
+  .spin{display:inline-block;width:15px;height:15px;border:2px solid #666;
+        border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite;
+        vertical-align:-2px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  audio{width:100%;margin-top:12px;display:none}
+  .presets{display:flex;gap:10px;flex-wrap:wrap}
+  .presets button{flex:1;min-width:150px;background:#21262d;color:var(--text);
+                  border:1px solid var(--border);border-radius:12px;
+                  padding:12px;font-size:.88rem;cursor:pointer}
+  footer{text-align:center;color:var(--muted);font-size:.75rem;margin-top:26px;line-height:1.6}
+  footer code{color:#cbb8ff}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎙️ Zomi Text-to-Speech</h1>
+  <p>Real Tedim voice — type, listen, download</p>
+  <div><span class="badge">✓ Genuine Tedim · Meta MMS</span></div>
+</header>
+
+<div class="wrap">
+
+  <div class="note">
+    This website speaks <b>true Tedim</b> using Meta's MMS model
+    (<code>facebook/mms-tts-ctd</code>) — the only Tedim TTS that exists.
+    The voice is synthetic with one fixed speaker.
+  </div>
+
+  <div class="card">
+    <label for="text">Tedim Lai Gelhna — Type Tedim text</label>
+    <textarea id="text" placeholder="Hih lai munah Tedim lai gelh in…"></textarea>
+    <div class="counter" id="counter">0 / 2000</div>
+
+    <label>Voice / Aw</label>
+    <div class="voices">
+      <label><input type="radio" name="voice" value="normal" checked>
+        <span>Normal<small>original MMS voice</small></span></label>
+      <label><input type="radio" name="voice" value="female">
+        <span>Female-style<small>converted — not a real woman</small></span></label>
+    </div>
+
+    <button class="btn btn-speak" id="speak">🔊 Speak</button>
+    <div id="status"></div>
+    <audio id="player" controls></audio>
+    <a class="btn btn-dl" id="dl" href="#" download>⬇️ Download audio</a>
+  </div>
+
+  <div class="card">
+    <label>📜 Preset examples — click to fill</label>
+    <div class="presets" style="margin-top:8px">
+      <button id="p1">📄 2 Korin 9:7<br><small>Piaknopna</small></button>
+      <button id="p2">📄 Filipi 4:12-13<br><small>Khazih hang</small></button>
+    </div>
+  </div>
+
+  <footer>
+    Zomi TTS · powered by <code>facebook/mms-tts-ctd</code> (Meta MMS)<br>
+    Female-style = pitch &amp; formant conversion, not a real female speaker.
+  </footer>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const MAX = 2000;
+
+const PRESET_A = "Mi khempeuh in amau lungsim sung uhah a hanciam bangin pia uh hen. " +
+  "Hazatna lungsim tawh ahi zongin, khia loin om thei lo ding cihna lungsim " +
+  "tawh ahi zongin kipia lo ding hi. Bang hang hiam na cih uh leh, piak nopna " +
+  "lungsim tawh a pia mi bek Pasian in a it hi.";
+const PRESET_B = "Simmawhna ahi zongin, hauhna ahi zongin ka thuak thei hi. " +
+  "Ankhamna, gilkialna, sum hauhna, zawnnate thuak dinginah na khempeuh " +
+  "panin ka kisin zo hi. Hong thahatsakpa Khazih hangin na khempeuh ka hih thei hi.";
+
+$("text").addEventListener("input", e => {
+  $("counter").textContent = e.target.value.length + " / " + MAX;
+});
+$("p1").onclick = () => { $("text").value = PRESET_A; $("text").dispatchEvent(new Event("input")); };
+$("p2").onclick = () => { $("text").value = PRESET_B; $("text").dispatchEvent(new Event("input")); };
+
+function status(html, cls){ const el=$("status"); el.innerHTML=html; el.className=cls||""; }
+
+$("speak").onclick = async () => {
+  const text = $("text").value.trim();
+  if (!text) { status("Tedim lai gelh in — type some Tedim text first.", "err"); return; }
+  if (text.length > MAX) { status("Text too long (max " + MAX + " characters).", "err"); return; }
+  const voice = document.querySelector('input[name="voice"]:checked').value;
+  const btn = $("speak");
+  btn.disabled = true;
+  $("dl").style.display = "none"; $("player").style.display = "none";
+  status('<span class="spin"></span>Generating Tedim speech…');
+
+  try {
+    const res = await fetch("/api/speak", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({text, voice})
+    });
+    if (!res.ok) {
+      let msg = "Server error (" + res.status + ").";
+      try { const j = await res.json(); if (j.detail) msg = j.detail; } catch(e){}
+      throw new Error(msg);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const player = $("player");
+    player.src = url; player.style.display = "block";
+    player.play().catch(()=>{});
+    const dl = $("dl");
+    const ext = (blob.type.includes("mpeg")) ? "mp3" : "wav";
+    dl.href = url; dl.download = "zomi-tts." + ext;
+    dl.style.display = "block";
+    status("✓ Done — listen or download below.", "ok");
+  } catch(e) {
+    let msg = e.message || "Something went wrong.";
+    if (e instanceof TypeError) {
+      msg = "Cannot reach the speech server. This page must be opened from your website address " +
+            "(after deploying to Hugging Face) — not as a downloaded file. " +
+            "The Tedim voice lives on the server, not in this page.";
+    }
+    status("⚠️ " + msg, "err");
+  } finally {
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>
